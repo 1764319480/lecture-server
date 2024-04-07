@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express.js": "^1.0.0",
+    "mongoose": "^8.3.0"
+  },
+  "scripts": {
+    "http": "nodemon ./src/http/app.js",
+    "mongo": "node ./src/db/mongo.js"
+  }
+}
