@@ -5,7 +5,7 @@
     "mongoose": "^8.3.0"
   },
   "scripts": {
-    "http": "nodemon ./src/http/app.js",
+    "dev": "nodemon ./src/http/app.js",
     "mongo": "node ./src/db/mongo.js"
   }
 }
