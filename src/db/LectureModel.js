@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-// 创建集合中文档的属性
+
 let lectureSchema = mongoose.Schema({
     lec_title: String,
     lec_id: String,
@@ -14,7 +14,7 @@ let lectureSchema = mongoose.Schema({
     lec_people: Array,
     lec_sign: String//签到码
 })
-// 创建模型对象，对集合users进行操作
+
 let lecturesModel = mongoose.model('lectures', lectureSchema);
 
 module.exports = lecturesModel;

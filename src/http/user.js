@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 const UserModel = require('../db/UserModel');
-const LectureModel = require('../db/LectureModel')
+const LectureModel = require('../db/LectureModel');
+const CarouselModel = require('../db/CarouselModel');
+
 // 解析json格式数据
 const jsonParser = bodyParser.json();
 // 解析query格式数据
@@ -45,7 +47,7 @@ router.post('/getUser', jsonParser, async (req, res) => {
     const userData = await UserModel.findOne({ userName: body.userName, token: body.token });
     if (userData != null) {
         res.json(userData);
-    } 
+    }
 })
 // 注册  谨慎调用，必须先判断用户是否存在
 router.post('/logon', jsonParser, async (req, res) => {
@@ -104,6 +106,18 @@ router.post('/changePwd', jsonParser, async (req, res) => {
             error: '修改失败'
         })
     }
+})
+// 获取轮播图
+router.get('/getCarousel', async (req, res) => {
+    const carouselData = await CarouselModel.find().select({_id: 0});
+    const resData = [];
+    for (let k of carouselData) {
+        resData.push({
+            lec_id: k.lec_id,
+            src: 'http://localhost:3000/images/' + k.img_id + '.jpg'
+        })
+    };
+    res.json(resData);
 })
 // 获取热门讲座
 router.get('/hotLecture', async (req, res) => {

@@ -2,9 +2,9 @@ const express = require('express');
 const userRouter = require('./user');
 const managerRouter = require('./manager');
 const db = require('../db/mongo')
-const UserModel = require('../db/UserModel');
 const LectureModel = require('../db/LectureModel')
 const app = new express();
+const path = require('path');
 
 db(() => {
     console.log('数据库连接成功！')
@@ -44,7 +44,8 @@ db(() => {
         };
         // console.log('数据库已更新');
     }, 1000*60);
-    
+    // 静态资源目录
+    app.use(express.static(path.join(__dirname, '../../public')));
     app.use(userRouter);
     app.use(managerRouter);
     app.listen(3000, () => {
