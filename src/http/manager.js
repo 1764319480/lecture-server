@@ -3,9 +3,12 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 const LectureModel = require('../db/LectureModel');
 const ManagerModel = require('../db/ManagerModel');
+const CarouselModel = require('../db/CarouselModel');
+const fs = require('fs');
+const path = require('path');
 
 // 解析json格式数据
-const jsonParser = bodyParser.json();
+const jsonParser = bodyParser.json({ limit: '10mb' });
 // 解析query格式数据
 // const urlencodeParser = bodyParser.urlencoded({ extended: false });
 
@@ -44,7 +47,7 @@ router.post('/modifyPwd', jsonParser, async (req, res) => {
             error: '缺少信息'
         });
     }
-    const data = await ManagerModel.updateOne({name: body.name}, {pwd: body.pwd});
+    const data = await ManagerModel.updateOne({ name: body.name }, { pwd: body.pwd });
     if (data.modifiedCount == 1) {
         res.json({
             message: '修改成功'
@@ -101,7 +104,7 @@ router.post('/findLecture', jsonParser, async (req, res) => {
             error: '缺少信息'
         });
     }
-    const data = await LectureModel.findOne({lec_id: body.lec_id});
+    const data = await LectureModel.findOne({ lec_id: body.lec_id });
     if (data) {
         res.json(data)
     } else {
@@ -157,6 +160,69 @@ router.post('/modifyLecture', jsonParser, async (req, res) => {
     } else {
         res.json({
             error: '修改失败'
+        })
+    }
+})
+// 删除轮播图图片
+router.post('/deleteCarousel', jsonParser, async (req, res) => {
+    const body = req.body;
+    if (!(body.hasOwnProperty('lec_id'))) {
+        res.status(403).json({
+            error: '缺少信息'
+        });
+    }
+    const data = await CarouselModel.deleteOne({ lec_id: body.lec_id });
+    if (data.deletedCount == 1) {
+        fs.unlink(path.join(__dirname, '../../public/images/') + body.lec_id + '.jpg', (err) => {
+            return false;
+        });
+        res.json({
+            message: '删除成功'
+        })
+    } else {
+        res.json({
+            error: '删除失败'
+        })
+    }
+})
+// 添加图片
+router.post('/addCarousel', jsonParser, async (req, res) => {
+    const body = req.body;
+    if (!(body.hasOwnProperty('lec_id') && body.hasOwnProperty('img'))) {
+        res.status(403).json({
+            error: '缺少信息'
+        });
+    }
+    if (await CarouselModel.findOne({ lec_id: body.lec_id })) {
+        res.json({
+            error: '该讲座已有海报'
+        })
+    } else if (await LectureModel.findOne({ lec_id: body.lec_id })) {
+        try {
+            await CarouselModel.create({ lec_id: body.lec_id, img_id: body.lec_id });
+            // 移除Base64前缀（如果存在）
+            const base64Image = body.img.replace(/^data:image\/\w+;base64,/, '');
+            // 将Base64字符串转换为Buffer对象
+            const dataBuffer = Buffer.from(base64Image, 'base64');
+            fs.writeFile(path.join(__dirname, '../../public/images/') + body.lec_id + '.jpg', dataBuffer, (err) => {
+                if (err) {
+                    res.json({
+                        error: '添加失败'
+                    })
+                } else {
+                    res.json({
+                        message: '添加成功'
+                    })
+                }
+            })
+        } catch (error) {
+            res.json({
+                error: '添加失败'
+            })
+        }
+    } else {
+        res.json({
+            error: '讲座编号不存在'
         })
     }
 })
