@@ -5,6 +5,7 @@ const db = require('../db/mongo')
 const LectureModel = require('../db/LectureModel')
 const app = new express();
 const path = require('path');
+const cors = require('cors');
 
 db(() => {
     console.log('数据库连接成功！')
@@ -73,6 +74,7 @@ db(() => {
     app.use(express.static(path.join(__dirname, '../../public')));
     app.use(userRouter);
     app.use(managerRouter);
+    app.use(cors())
     app.listen(3000, () => {
         console.log('服务已启动...');
     })
