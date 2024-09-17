@@ -20,7 +20,7 @@ mongod
 ```sh
 npm install
 ```
-3. Add data to database:
+3. Add data to database(this order will automatically create a table lecture and add sample data to the table):
 ```sh
 npm run init
 ```
