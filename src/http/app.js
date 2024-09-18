@@ -70,6 +70,26 @@ db(() => {
         };
         // console.log('数据库已更新');
     }, 1000 * 30);
+    // 检验token
+    const noToken = ['/images', '/login', '/superLogin', '/allLecture', '/hotLecture', '/getUser', '/superList', '/getCarousel']
+    function authenticationMiddleware(req, res, next) {
+        const token = req.headers['authorization'];
+        let skipAuth = false; // 用于跟踪是否需要跳过token验证
+        for (let k of noToken) {
+          if (req.path.startsWith(k)) {
+            skipAuth = true; 
+            next(); 
+            return; 
+          }
+        }
+        // 如果没有找到匹配路径且没有token，则返回401错误
+        if (!skipAuth && !token) {
+          return res.status(401).send('Unauthorized');
+        }
+        next();
+      } 
+      // 使用中间件
+      app.use(authenticationMiddleware);
     // 静态资源目录
     app.use(express.static(path.join(__dirname, '../../public')));
     app.use(userRouter);
