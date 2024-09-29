@@ -6,6 +6,7 @@ const LectureModel = require('../db/LectureModel')
 const app = new express();
 const path = require('path');
 const cors = require('cors');
+const { error } = require('console');
 
 db(() => {
     console.log('数据库连接成功！')
@@ -71,7 +72,7 @@ db(() => {
         // console.log('数据库已更新');
     }, 1000 * 30);
     // 检验token
-    const noToken = ['/images', '/login', '/superLogin', '/allLecture', '/hotLecture', '/getUser', '/superList', '/getCarousel', '/isLogon', '/logon']
+    const noToken = ['/images', '/login', '/superLogin', '/allLecture', '/hotLecture', '/getUser', '/superList', '/getCarousel', '/isLogon', '/logon', '/changePwd']
     function authenticationMiddleware(req, res, next) {
         const token = req.headers['authorization'];
         let skipAuth = false; // 用于跟踪是否需要跳过token验证
@@ -84,7 +85,9 @@ db(() => {
         }
         // 如果没有找到匹配路径且没有token，则返回401错误
         if (!skipAuth && !token) {
-          return res.status(401).send('Unauthorized');
+          return res.json({
+            error: '请先登录'
+          });
         }
         next();
       } 
