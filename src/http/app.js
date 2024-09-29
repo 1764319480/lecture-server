@@ -71,7 +71,7 @@ db(() => {
         // console.log('数据库已更新');
     }, 1000 * 30);
     // 检验token
-    const noToken = ['/images', '/login', '/superLogin', '/allLecture', '/hotLecture', '/getUser', '/superList', '/getCarousel']
+    const noToken = ['/images', '/login', '/superLogin', '/allLecture', '/hotLecture', '/getUser', '/superList', '/getCarousel', '/isLogon', '/logon']
     function authenticationMiddleware(req, res, next) {
         const token = req.headers['authorization'];
         let skipAuth = false; // 用于跟踪是否需要跳过token验证
